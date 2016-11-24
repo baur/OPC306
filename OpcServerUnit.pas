@@ -30,7 +30,7 @@ uses
   SysUtils, Classes, prOpcServer, prOpcTypes, Generics.collections, prOpcDa;
 
 type
-  TDemo16 = class(TOpcItemServer)
+  TOPC306 = class(TOpcItemServer)
 
   private
   protected
@@ -53,7 +53,7 @@ uses
 
 {$IFDEF NewBranch}
 
-procedure TDemo16.ListItemIds(List: TItemIDList);
+procedure TOPC306.ListItemIds(List: TItemIDList);
 begin
   InitTagList;
   with List.AddBranch('FSO') do
@@ -72,7 +72,7 @@ end;
 
 {$ELSE}
 
-procedure TDemo16.ListItemIds(List: TItemIDList);
+procedure TOPC306.ListItemIds(List: TItemIDList);
 var
   key: string;
 begin
@@ -87,7 +87,7 @@ end;
 
 {$ENDIF}
 
-function TDemo16.GetItemInfo(const ItemID: String; var AccessPath: string;
+function TOPC306.GetItemInfo(const ItemID: String; var AccessPath: string;
   var AccessRights: TAccessRights): integer;
 begin
   { Return a handle that will subsequently identify ItemID }
@@ -110,12 +110,12 @@ begin
 
 end;
 
-procedure TDemo16.ReleaseHandle(ItemHandle: TItemHandle);
+procedure TOPC306.ReleaseHandle(ItemHandle: TItemHandle);
 begin
   { Release the handle previously returned by GetItemInfo }
 end;
 
-function TDemo16.GetItemValue(ItemHandle: TItemHandle; var Quality: word)
+function TOPC306.GetItemValue(ItemHandle: TItemHandle; var Quality: word)
   : OleVariant;
 begin
   { return the value of the item identified by ItemHandle }
@@ -137,7 +137,7 @@ begin
   end
 end;
 
-procedure TDemo16.SetItemValue(ItemHandle: TItemHandle;
+procedure TOPC306.SetItemValue(ItemHandle: TItemHandle;
   const Value: OleVariant);
 begin
   { set the value of the item identified by ItemHandle }
@@ -165,7 +165,7 @@ const
   ServerDesc = 'OPC306 - OPC Server';
   ServerVendor = 'TEAM306';
 
-function TDemo16.Options: TServerOptions;
+function TOPC306.Options: TServerOptions;
 begin
   result := [soHierarchicalBrowsing, soAlwaysAllocateErrorArrays]
 end;
@@ -173,7 +173,7 @@ end;
 initialization
 
 RegisterOPCServer(ServerGuid, ServerVersion, ServerDesc, ServerVendor,
-  TDemo16.create)
+  TOPC306.create)
 
 end.
 

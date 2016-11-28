@@ -3,7 +3,7 @@ unit uDMUtil;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.AppEvnts,vcl.forms;
+  System.SysUtils, System.Classes, Vcl.AppEvnts, Vcl.forms, inifiles;
 
 type
   TDMUtil = class(TDataModule)
@@ -13,7 +13,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    procedure ExceptionLogger(e: Exception;s:string);
+    procedure ExceptionLogger(E: Exception; s: string);
   end;
 
 var
@@ -21,11 +21,11 @@ var
 
 implementation
 
-{%CLASSGROUP 'Vcl.Controls.TControl'}
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
 
 {$R *.dfm}
 
-procedure TDMUtil.ExceptionLogger(e: Exception;s:string);
+procedure TDMUtil.ExceptionLogger(E: Exception; s: string);
 var
   ErrorLogFileName: string;
   ErrorFile: TextFile;
@@ -40,21 +40,20 @@ begin
     Rewrite(ErrorFile);
   try
     // add the current date/time and the exception message to the log
-    if e <> nil then
-    ErrorData := Format('%s : %s - %s', [DateTimeToStr(Now), e.ClassName, e.Message]);
+    if E <> nil then
+      ErrorData := Format('%s : %s - %s', [DateTimeToStr(Now), E.ClassName,
+        E.Message]);
     if s <> '' then
-    ErrorData := s;
+      ErrorData := s;
     WriteLn(ErrorFile, ErrorData);
   finally
     CloseFile(ErrorFile)
   end;
 end;
 
-
-procedure TDMUtil.ApplicationEvents1Exception(Sender: TObject;
-  E: Exception);
+procedure TDMUtil.ApplicationEvents1Exception(Sender: TObject; E: Exception);
 begin
-   ExceptionLogger(e,'');
+  ExceptionLogger(E, '');
 end;
 
 end.

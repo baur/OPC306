@@ -1,7 +1,7 @@
 object DMUtil: TDMUtil
   OldCreateOrder = False
-  Height = 150
-  Width = 215
+  Height = 309
+  Width = 372
   object ApplicationEvents1: TApplicationEvents
     OnException = ApplicationEvents1Exception
     Left = 128

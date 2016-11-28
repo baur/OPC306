@@ -76,7 +76,7 @@ procedure TOPC306.ListItemIds(List: TItemIDList);
 var
   key: string;
 begin
-{why this is duplicates with above?}
+  { why this is duplicates with above? }
   List.AddItemId('FSO.Drum.Drum1.T_Burner', [iaRead], varDouble);
   List.AddItemId('FSO.Drum.Drum2.T_Burner', [iaRead], varDouble);
   List.AddItemId('FSO.Drum.Drum3.T_Burner', [iaRead], varDouble);
@@ -119,6 +119,8 @@ function TOPC306.GetItemValue(ItemHandle: TItemHandle; var Quality: word)
   : OleVariant;
 begin
   { return the value of the item identified by ItemHandle }
+  SetItemQuality(ItemHandle, $08);
+  SetItemTimestamp(ItemHandle, DateTimeToFileTime(now()));
   case ItemHandle of
     0:
       result := FSO.Drum.Drum1.T_Burner;
@@ -143,17 +145,17 @@ begin
   { set the value of the item identified by ItemHandle }
   case ItemHandle of
     0:
-      FSO.Drum.Drum1.T_Burner := Value;
+        FSO.Drum.Drum1.T_Burner := Value;
     1:
-      FSO.Drum.Drum2.T_Burner := Value;
+        FSO.Drum.Drum2.T_Burner := Value;
     2:
-      FSO.Drum.Drum3.T_Burner := Value;
+        FSO.Drum.Drum3.T_Burner := Value;
     3:
-      FSO.Drum.Drum1.T_Output := Value;
+        FSO.Drum.Drum1.T_Output := Value;
     4:
-      FSO.Drum.Drum2.T_Output := Value;
+        FSO.Drum.Drum2.T_Output := Value;
     5:
-      FSO.Drum.Drum3.T_Output := Value;
+        FSO.Drum.Drum3.T_Output := Value;
   else
     raise EOpcError.create(OPC_E_INVALIDHANDLE)
   end

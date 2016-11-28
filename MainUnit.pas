@@ -27,10 +27,16 @@ unit MainUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, System.Actions, Vcl.ActnList,
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ToolWin, Vcl.ActnCtrls, Vcl.ActnMenus;
 
 type
   TMainForm = class(TForm)
+    ActionMainMenuBar1: TActionMainMenuBar;
+    ActionManager1: TActionManager;
+    Action1: TAction;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure Action1Execute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,6 +51,17 @@ implementation
 {$R *.DFM}
 
 uses OpcServerUnit;
+
+procedure TMainForm.Action1Execute(Sender: TObject);
+begin
+Application.Terminate;
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := false;
+  Application.Minimize;
+end;
 
 end.
 

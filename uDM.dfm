@@ -1,7 +1,8 @@
 object DM: TDM
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Height = 306
+  OnDestroy = DataModuleDestroy
+  Height = 333
   Width = 320
   object UpdateTimer: TTimer
     OnTimer = UpdateTimerTimer

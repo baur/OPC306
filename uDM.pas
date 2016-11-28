@@ -4,7 +4,8 @@ interface
 
 uses
   System.SysUtils, System.Classes, Data.DB, Data.Win.ADODB, Vcl.ExtCtrls,
-  Vcl.Dialogs, IOUtils, Vcl.Graphics, IniFiles, Vcl.forms;
+  Vcl.Dialogs, IOUtils, Vcl.Graphics, IniFiles, Vcl.forms,
+  prOpcServer, prOpcTypes, Generics.collections, prOpcDa;
 
 type
 
@@ -14,8 +15,11 @@ type
     ADOQuery: TADODataSet;
     procedure DataModuleCreate(Sender: TObject);
     procedure UpdateTimerTimer(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
   private
     { Private declarations }
+    procedure InitIni;
+    procedure SaveIni;
   public
     { Public declarations }
     procedure OpenDBF(folderName: string; fileName: string);
@@ -121,7 +125,6 @@ type
     Thickener: TThickener;
   end;
 
-
 var
   DM: TDM;
   FSO: TFSO;
@@ -134,6 +137,38 @@ implementation
 uses uDMUtil, OpcServerUnit;
 
 {$R *.dfm}
+
+procedure TDM.InitIni;
+var
+  appINI: TIniFile;
+  LastUser: string;
+  LastDate: TDateTime;
+begin
+  appINI := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  try
+    folderName := appINI.ReadString('DBF', 'folderName', '');
+    if folderName = '' then
+      folderName := ExtractFileDir(Application.ExeName);
+    fileName := appINI.ReadString('DBF', 'fileName', '');
+    if fileName = '' then
+      fileName := 'mnem_fso_cpsh.dbf';
+  finally
+    appINI.Free;
+  end;
+end;
+
+procedure TDM.SaveIni;
+var
+  appINI: TIniFile;
+begin
+  appINI := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  try
+    appINI.WriteString('DBF', 'folderName', folderName);
+    appINI.WriteString('DBF', 'fileName ', fileName);
+  finally
+    appINI.Free;
+  end;
+end;
 
 procedure TDM.OpenDBF(folderName: string; fileName: string);
 begin
@@ -159,9 +194,16 @@ procedure TDM.DataModuleCreate(Sender: TObject);
 var
   Ini: TIniFile;
 begin
-//  folderName := 'c:\Users\DASUP\Documents\Embarcadero\Studio\Projects\OPC306\Win32\Release';
-  folderName := ExtractFileDir(Application.ExeName);
-  fileName := 'mnem_fso_cpsh.dbf';
+  // folderName := 'c:\Users\DASUP\Documents\Embarcadero\Studio\Projects\OPC306\Win32\Release';
+  InitIni;
+  // folderName := ExtractFileDir(Application.ExeName);
+  // fileName := 'mnem_fso_cpsh.dbf';
+  UpdateTimer.Interval := 1000;
+end;
+
+procedure TDM.DataModuleDestroy(Sender: TObject);
+begin
+  SaveIni;
 end;
 
 procedure TDM.GetData;
@@ -273,20 +315,28 @@ end;
 
 procedure TDM.SetOPCData;
 begin
-//  tdemo16.SetItemValue(0,FSO.Drum.Drum1.T_Burner);
-//  tdemo16.SetItemValue(1,FSO.Drum.Drum2.T_Burner);
-//  tdemo16.SetItemValue(2,FSO.Drum.Drum3.T_Burner);
-//  tdemo16.SetItemValue(3,FSO.Drum.Drum1.T_Output);
-//  tdemo16.SetItemValue(4,FSO.Drum.Drum2.T_Output);
-//  tdemo16.SetItemValue(5,FSO.Drum.Drum3.T_Output);
+  // tdemo16.SetItemValue(0,FSO.Drum.Drum1.T_Burner);
+  // tdemo16.SetItemValue(1,FSO.Drum.Drum2.T_Burner);
+  // tdemo16.SetItemValue(2,FSO.Drum.Drum3.T_Burner);
+  // tdemo16.SetItemValue(3,FSO.Drum.Drum1.T_Output);
+  // tdemo16.SetItemValue(4,FSO.Drum.Drum2.T_Output);
+  // tdemo16.SetItemValue(5,FSO.Drum.Drum3.T_Output);
 end;
 
 procedure TDM.UpdateTimerTimer(Sender: TObject);
 begin
-  DM.OpenDBF(folderName, fileName);
-  GetData;
-  SetOPCData;
-  UpdateTimer.Interval := 1000;
+  if FileExists(folderName + '\' + fileName) then
+  BEGIN
+    DM.OpenDBF(folderName, fileName);
+    GetData;
+    SetOPCData;
+
+  END
+  ELSE
+  begin
+    DMUtil.ExceptionLogger(nil, 'File: ' + fileName + ' not exists');
+    UpdateTimer.Enabled := false;
+  end;
 end;
 
 end.

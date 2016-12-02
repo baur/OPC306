@@ -68,3 +68,4 @@ __recovery/
 #custom files
 *.log
 format x64.bat
+OPC306.error.log

@@ -69,4 +69,4 @@ __recovery/
 *.log
 format x64.bat
 OPC306.error.log
-Win32/Release/OPC306.error.log
+Win32\Release\*.log

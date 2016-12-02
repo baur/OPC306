@@ -10,11 +10,9 @@ uses
 type
 
   TDM = class(TDataModule)
-    UpdateTimer: TTimer;
     ADOConnectionDBF: TADOConnection;
     ADOQuery: TADODataSet;
     procedure DataModuleCreate(Sender: TObject);
-    procedure UpdateTimerTimer(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
     { Private declarations }
@@ -22,9 +20,9 @@ type
     procedure SaveIni;
   public
     { Public declarations }
-    procedure OpenDBF(folderName: string; fileName: string);
+    function OpenDBF(folderName: string; fileName: string): boolean;
     procedure GetData;
-    procedure SetOPCData;
+    procedure getDataFromDBF;
   end;
 
   TAppData = record
@@ -100,20 +98,11 @@ type
     C10: TConvParam;
   end;
 
-  TControls = record
-    IsEnabled: boolean;
-  end;
-
   TMetaD = record
     ID: integer;
     TIME: string;
     DATE: string;
-    FontColor: Tcolor;
-    visible: boolean;
-    Controls: TControls;
-    isArchive: boolean;
-    outdatedIndex: integer;
-    WarningText: string;
+    status: boolean;
   end;
 
   TFSO = record
@@ -135,7 +124,6 @@ implementation
 { %CLASSGROUP 'Vcl.Controls.TControl' }
 
 uses uDMUtil, OpcServerUnit;
-
 {$R *.dfm}
 
 procedure TDM.InitIni;
@@ -170,23 +158,27 @@ begin
   end;
 end;
 
-procedure TDM.OpenDBF(folderName: string; fileName: string);
+function TDM.OpenDBF(folderName: string; fileName: string): boolean;
 begin
   try
+    result := true;
     if not ADOConnectionDBF.Connected then
     begin
       ADOConnectionDBF.LoginPrompt := false;
       ADOConnectionDBF.ConnectionString :=
         Format('Provider=VFPOLEDB.1;Data Source=%s;Password="";Collating Sequence=MACHINE',
         [folderName]);
-      ADOConnectionDBF.Connected := True;
+      ADOConnectionDBF.Connected := true;
     end;
     ADOQuery.close;
     ADOQuery.CommandText := 'Select * from ' + fileName;
     ADOQuery.Open;
   except
     on E: Exception do
-      DMUtil.ExceptionLogger(E, '');
+    begin
+      result := false;
+      DMUtil.ExceptionLogger(E, 'OpenDBF');
+    end;
   end;
 end;
 
@@ -198,7 +190,7 @@ begin
   InitIni;
   // folderName := ExtractFileDir(Application.ExeName);
   // fileName := 'mnem_fso_cpsh.dbf';
-  UpdateTimer.Interval := 1000;
+  // UpdateTimer.Interval := 1000;
 end;
 
 procedure TDM.DataModuleDestroy(Sender: TObject);
@@ -208,10 +200,10 @@ end;
 
 procedure TDM.GetData;
 begin
-  FSO.MetaD.FontColor := clRed;
+  FSO.MetaD.status := true;
   try
     ADOQuery.First;
-    begin
+    try
       { *Мета - данные* }
       FSO.MetaD.ID := ADOQuery.FieldByName('NOM').AsInteger;
       FSO.MetaD.TIME := ADOQuery.FieldByName('TIMER').asstring;
@@ -297,45 +289,40 @@ begin
       FSO.Drum.Drum3.T_Pillow_block2 := ADOQuery.FieldByName('T_D3_2').Value;
 
       { *Сгустители - состояние* }
-      FSO.Thickener.Thickener1.is_working :=
-        ADOQuery.FieldByName('SG1_RUN').Value;
-      FSO.Thickener.Thickener2.is_working :=
-        ADOQuery.FieldByName('SG2_RUN').Value;
-      FSO.Thickener.Thickener3.is_working :=
-        ADOQuery.FieldByName('SG3_RUN').Value;
+      FSO.Thickener.Thickener1.is_working := ADOQuery.FieldByName('SG1_RUN').Value;
+      FSO.Thickener.Thickener2.is_working := ADOQuery.FieldByName('SG2_RUN').Value;
+      FSO.Thickener.Thickener3.is_working := ADOQuery.FieldByName('SG3_RUN').Value;
+    except
+      on E: Exception do
+      begin
+        FSO.MetaD.status := false;
+        DMUtil.ExceptionLogger(E, 'GetData');
+      end;
     end;
 
   finally
     ADOQuery.close;
     ADOConnectionDBF.Connected := false;
-    FSO.MetaD.isArchive := false;
   end;
 
 end;
 
-procedure TDM.SetOPCData;
-begin
-  // tdemo16.SetItemValue(0,FSO.Drum.Drum1.T_Burner);
-  // tdemo16.SetItemValue(1,FSO.Drum.Drum2.T_Burner);
-  // tdemo16.SetItemValue(2,FSO.Drum.Drum3.T_Burner);
-  // tdemo16.SetItemValue(3,FSO.Drum.Drum1.T_Output);
-  // tdemo16.SetItemValue(4,FSO.Drum.Drum2.T_Output);
-  // tdemo16.SetItemValue(5,FSO.Drum.Drum3.T_Output);
-end;
+procedure TDM.getDataFromDBF;
 
-procedure TDM.UpdateTimerTimer(Sender: TObject);
 begin
   if FileExists(folderName + '\' + fileName) then
   BEGIN
-    DM.OpenDBF(folderName, fileName);
-    GetData;
-    SetOPCData;
+    if DM.OpenDBF(folderName, fileName) then
+      GetData
+    else
 
+      FSO.MetaD.status := false;
   END
   ELSE
   begin
+    FSO.MetaD.status := false;
     DMUtil.ExceptionLogger(nil, 'File: ' + fileName + ' not exists');
-    UpdateTimer.Enabled := false;
+    // UdateTimer.Enabled := false;
   end;
 end;
 

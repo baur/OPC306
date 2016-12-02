@@ -42,7 +42,7 @@ begin
     // add the current date/time and the exception message to the log
     if E <> nil then
       ErrorData := Format('%s : %s - %s', [DateTimeToStr(Now), E.ClassName,
-        E.Message]);
+        E.Message + '[' + s + ']']);
     if s <> '' then
       ErrorData := s;
     WriteLn(ErrorFile, ErrorData);
@@ -53,7 +53,7 @@ end;
 
 procedure TDMUtil.ApplicationEvents1Exception(Sender: TObject; E: Exception);
 begin
-  ExceptionLogger(E, '');
+  ExceptionLogger(E, 'Global');
 end;
 
 end.

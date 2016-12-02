@@ -4,11 +4,6 @@ object DM: TDM
   OnDestroy = DataModuleDestroy
   Height = 333
   Width = 320
-  object UpdateTimer: TTimer
-    OnTimer = UpdateTimerTimer
-    Left = 200
-    Top = 46
-  end
   object ADOConnectionDBF: TADOConnection
     ConnectionString = 
       'Provider=VFPOLEDB.1;Data Source=C:\ASUTP\001.WORK\'#1055#1088#1086#1077#1082#1090#1099'\'#1046#1054#1060'\'#1055#1077 +

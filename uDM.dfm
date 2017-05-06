@@ -2,8 +2,8 @@ object DM: TDM
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Height = 333
-  Width = 320
+  Height = 430
+  Width = 508
   object ADOConnectionDBF: TADOConnection
     ConnectionString = 
       'Provider=VFPOLEDB.1;Data Source=C:\ASUTP\001.WORK\'#1055#1088#1086#1077#1082#1090#1099'\'#1046#1054#1060'\'#1055#1077 +
@@ -20,5 +20,25 @@ object DM: TDM
     Parameters = <>
     Left = 240
     Top = 136
+  end
+  object Timer_getDataFromDBF: TTimer
+    Interval = 15000
+    OnTimer = Timer_getDataFromDBFTimer
+    Left = 144
+    Top = 216
+  end
+  object ADOConnection: TADOConnection
+    LoginPrompt = False
+    Provider = 'SQLOLEDB.1'
+    Left = 320
+    Top = 56
+  end
+  object ADOQuery_TSIGNAL: TADOQuery
+    Connection = ADOConnection
+    Parameters = <>
+    SQL.Strings = (
+      'SELECT * FROM [ASUTP].[SCADA].[vJOF123_TSIGNAL]')
+    Left = 352
+    Top = 328
   end
 end

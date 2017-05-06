@@ -43,8 +43,8 @@ begin
     if E <> nil then
       ErrorData := Format('%s : %s - %s', [DateTimeToStr(Now), E.ClassName,
         E.Message + '[' + s + ']']);
-    if s <> '' then
-      ErrorData := s;
+    if (s <> '') and (E = nil) then
+      ErrorData := DateTimeToStr(Now)+': '+s;
     WriteLn(ErrorFile, ErrorData);
   finally
     CloseFile(ErrorFile)

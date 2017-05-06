@@ -68,5 +68,7 @@ __recovery/
 #custom files
 *.log
 format x64.bat
+connection.txt
 OPC306.error.log
 Win32\Release\*.log
+.svn/

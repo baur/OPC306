@@ -1,6 +1,6 @@
 # OPC306
-Public data from DBF to OPC Server 
+OPC Server
 # Dependencies
 * https://github.com/engycz/propc
 * Install vfpoledbsetup.msi from root
-* Release\mnem_fso_cpsh.dbf sample DBF file
+* Sample DBF file: Release\mnem_fso_cpsh.dbf 

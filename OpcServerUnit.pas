@@ -27,7 +27,7 @@ unit OpcServerUnit;
 interface
 
 uses
-  SysUtils, Classes, prOpcServer, prOpcTypes, Generics.collections, prOpcDa, Windows, DateUtils;
+  SysUtils, Classes, prOpcServer, prOpcTypes, Generics.collections, prOpcDa, Windows, DateUtils, ActiveX;
 
 type
   TOPC306 = class(TOpcItemServer)
@@ -152,7 +152,7 @@ begin
         td := DM.GetTagData(ATagList[ItemHandle].KeyLabel);
         Quality := getTagQuality(td.Branch,td.TagDateTime);
         Timestamp := DateTimeToFileTime(td.TagDateTime);
-        result := td.TagValue;
+        VariantChangeType(Result, td.TagValue, 0, td.VarType);
       end
   else
     raise EOpcError.create(OPC_E_INVALIDHANDLE)
